@@ -21,7 +21,7 @@ ll powmod_non_recursive(ll a, ll b, ll p)
         }
         a *= a;
         a %= p;
-        b >>= 1;    // you can also use b >> 1
+        b >>= 1;
     }
     return product;
 }
