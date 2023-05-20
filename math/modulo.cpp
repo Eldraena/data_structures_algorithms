@@ -1,4 +1,5 @@
-//Caculate (a^b)%p
+//Caculate (A ^ B) % p
+//(A / B) % p = ((A % p) * (B^(p - 2) % p)) % p
 
 #include <bits/stdc++.h>
 #define ll unsigned long long
