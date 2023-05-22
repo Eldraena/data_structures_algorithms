@@ -1,52 +1,35 @@
-#include <bits/stdc++.h>
-#define fio ios_base::sync_with_stdio(false); cin.tie(NULL)
-using namespace std;
-
-int n, k, cnt;
-
-vector<int> vt;
-
-void combination(vector<int> vt, vector<bool>& mark, vector<int>& per, int c)
-{
-    if(c == k)
+class Solution {
+public:
+    void comb(vector<int>& data, vector<vector<int>>& res, vector<int> nums, int k, int id)
     {
-        cnt++;
-        for(auto i: per)
-            cout << i << " ";
-        cout << endl;
-        return;
-    }
-    
-    for(int i = 0; i < n; i++)
-    {
-        if(mark[i] == false && (c == 0 || vt[i] > per[c - 1]))
+        if(id == k)
         {
-            mark[i] = true;
-            per.at(c) = vt[i];
-            combination(vt, mark, per, c + 1);
-            mark[i] = false;
+            res.push_back(data);
+            return;
+        }
+
+        for(int i = 0; i < nums.size(); i++)
+        {
+            if(id == 0 || (id > 0 && nums[i] > data[id - 1]))
+            {
+                data[id] = nums[i];
+                comb(data, res, nums, k, id + 1);
+            }
         }
     }
-}
 
-int main()
-{
-    fio;
-    cin >> n >> k;
-    cnt = 0;
-
-    vector<bool> mark(n, false);
-    vector<int> vt, per(k, -1);
-    
-    for(int i = 0; i < n; i++)
+    vector<vector<int>> combine(int n, int k) 
     {
-        vt.push_back(i);
-        cout << vt.at(i) << " ";
+        vector<vector<int>> res;
+        vector<int> nums, data;
+
+        for(int i = 1; i <= n; i++)
+            nums.push_back(i);
+        sort(nums.begin(), nums.end());
+        for(int i = 0; i < k; i++)
+            data.push_back(0);
+
+        comb(data, res, nums, k, 0);
+        return res;  
     }
-    cout << endl;
-    
-    combination(vt, mark, per, 0);
-    cout << cnt << endl;
-    
-    return 0;
-}
+};
