@@ -1,53 +1,35 @@
-
-#include <bits/stdc++.h>
-#define fio ios_base::sync_with_stdio(false); cin.tie(NULL)
-using namespace std;
-
-int n, k, cnt;
-
-vector<int> vt;
-
-void permutation(vector<int> vt, vector<bool>& mark, vector<int>& per, int c)
-{
-    if(c == k)
+class Solution {
+public:
+    void per(vector<int>& nums, vector<vector<int>>& res, vector<pair<int, int>> &mark, int k)
     {
-        cnt++;
-        for(auto i: per)
-            cout << i << " ";
-        cout << endl;
-        return;
-    }
-    
-    for(int i = 0; i < n; i++)
-    {
-        if(mark[i] == false)
+        if(k == nums.size())
         {
-            mark[i] = true;
-            per.at(c) = vt[i];
-            permutation(vt, mark, per, c + 1);
-            mark[i] = false;
+            res.push_back(nums);
+            return;
         }
+
+        for(int i = 0; i < mark.size(); i++)
+        {
+            if(mark[i].second == 0)
+            {
+                mark[i].second = 1;
+                nums[k] = mark[i].first;
+                per(nums, res, mark, k + 1);
+                mark[i].second = 0;
+            }
+        }
+
     }
-}
 
-int main()
-{
-    fio;
-    cin >> n >> k;
-    cnt = 0;
-
-    vector<bool> mark(n, false);
-    vector<int> vt, per(k, -1);
-    
-    for(int i = 0; i < n; i++)
+    vector<vector<int>> permute(vector<int>& nums) 
     {
-        vt.push_back(i);
-        cout << vt.at(i) << " ";
+        vector<vector<int>> res;
+        vector<pair<int, int>> mark;
+
+        for(int i = 0; i < nums.size(); i++)
+            mark.push_back({nums[i], 0});
+           
+        per(nums, res, mark, 0);
+        return res;     
     }
-    cout << endl;
-    
-    permutation(vt, mark, per, 0);
-    cout << cnt << endl;
-    
-    return 0;
-}
+};
