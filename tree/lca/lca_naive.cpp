@@ -34,7 +34,7 @@ void dfs(int u, int p, int d)
     }
 }
 
-int lca_brute_force(int u, int v)
+int lca_naive(int u, int v)
 {
     if(u == v)
     {
@@ -83,7 +83,7 @@ int main()
     {
         int u, v;
         cin >> u >> v;
-        cout << lca_brute_force(u, v) << "\n";
+        cout << lca_naive(u, v) << "\n";
     }
   
     return 0;
