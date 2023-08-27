@@ -9,7 +9,7 @@ int main()
     do
     {
         for(auto num : nums)
-            cout << num<< " ";
+            cout << num << " ";
         cout << endl;
     } while (next_permutation(nums.begin(), nums.end()));
 
