@@ -1,23 +1,29 @@
-class SegmentTree {
+class SegmentTree 
+{
 private:
     vector<int> nums;
     vector<int> maxTree;
     vector<int> sumTree; 
     int n;
     
-    int left(int p) {
+    int left(int p) 
+    {
         return p << 1;
     }
 
-    int right(int p) {
+    int right(int p) 
+    {
         return (p << 1) + 1;
     }
 
-    void buildMaxTree(int p, int L, int R) {
-        if (L == R) {
+    void buildMaxTree(int p, int L, int R) 
+    {
+        if (L == R) 
+        {
             maxTree[p] = L;
         }
-        else {
+        else 
+        {
             buildMaxTree(left(p), L, (L + R) / 2);
             buildMaxTree(right(p), (L + R) / 2 + 1, R);
             int c1 = maxTree[left(p)];
@@ -26,18 +32,22 @@ private:
         }
     }
 
-    void buildSumTree(int p, int L, int R) {
-        if (L == R) {
+    void buildSumTree(int p, int L, int R) 
+    {
+        if (L == R) 
+        {
             sumTree[p] = L;
         }
-        else {
+        else 
+        {
             buildSumTree(left(p), L, (L + R) / 2);
             buildSumTree(right(p), (L + R) / 2 + 1, R);
             sumTree[p] = sumTree[left(p)] + sumTree[right(p)];
         }
     }
     
-    int rmq(int p, int L, int R, int i, int j) {
+    int rmq(int p, int L, int R, int i, int j) 
+    {
         if (i > R || j < L) return -1;
         if (L >= i && R <= j) return maxTree[p];
         
@@ -48,14 +58,16 @@ private:
         return (nums[p1] <= nums[p2]) ? p1 : p2;
     }
 
-    int rsq(int p, int L, int R, int i, int j) {
+    int rsq(int p, int L, int R, int i, int j) 
+    {
         if (i > R || j < L) return 0;
         if (L >= i && R <= j) return sumTree[p];
 
         return rsq(left(p), L, (L + R)/2, i, j) + rsq(right(p), (L + R)/2 + 1, R, i, j);
     }
 
-    void update(int p, int l, int r, int idx, int dif) {
+    void update(int p, int l, int r, int idx, int dif) 
+    {
         if (idx < l || idx > r) return;
         
         sumTree[p] += dif;
@@ -66,7 +78,8 @@ private:
     }
 
 public:
-    SegmentTree(vector<int>& A) {
+    SegmentTree(vector<int>& A) 
+    {
         nums = A;
         n = (int)nums.size();
         maxTree.assign(4 * n, 0);
@@ -75,15 +88,18 @@ public:
         buildSumTree(1, 0, n - 1);
     }
     
-    int rangeMaxQuery(int i, int j) {
+    int rangeMaxQuery(int i, int j) 
+    {
         return rmq(1, 0, n - 1, i, j);
     }
 
-    int rangeSumQuery(int i, int j) {
+    int rangeSumQuery(int i, int j) 
+    {
         return rsq(1, 0, n - 1, i, j);
     }
 
-    void update(int idx, int val) {
+    void update(int idx, int val) 
+    {
         int dif = val - nums[idx];
         nums[idx] = val;
         update(1, 0, n - 1, idx, dif);
