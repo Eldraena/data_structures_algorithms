@@ -1,37 +1,36 @@
 #include<bits/stdc++.h>
 
 using namespace std;
-
 // summation
 struct segmenttree 
 {
-	int n;
-	vector<int> st;
+    int n;
+    vector<int> st;
 
-	void init(int _n) 
-    	{
-		this->n = _n;
-		st.resize(4 * n, 0);
+    void init(int _n) 
+    {
+    	this->n = _n;
+    	st.resize(4 * n, 0);
+    }
+
+    void build(int start, int ending, int node, vector<int> &v) 
+    {
+        // leaf node base case
+	if (start == ending) 
+        {
+	    st[node] = v[start];
+	    return;
 	}
 
-	void build(int start, int ending, int node, vector<int> &v) 
-    	{
-		// leaf node base case
-		if (start == ending) 
-        	{
-			st[node] = v[start];
-			return;
-		}
+	int mid = (start + ending) / 2;
 
-		int mid = (start + ending) / 2;
+	// left subtree is (start,mid)
+	build(start, mid, 2 * node + 1, v);
+	// right subtree is (mid+1,ending)
+	build(mid + 1, ending, 2 * node + 2, v);
 
-		// left subtree is (start,mid)
-		build(start, mid, 2 * node + 1, v);
-		// right subtree is (mid+1,ending)
-		build(mid + 1, ending, 2 * node + 2, v);
-
-		st[node] = st[node * 2 + 1] + st[node * 2 + 2];
-	}
+	st[node] = st[node * 2 + 1] + st[node * 2 + 2];
+    }
 
 	int query(int start, int ending, int l, int r, int node) 
     	{
