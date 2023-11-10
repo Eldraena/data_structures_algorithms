@@ -1,107 +1,118 @@
-class SegmentTree 
+#include<bits/stdc++.h>
+
+using namespace std;
+
+// summation
+struct segmenttree 
 {
-private:
-    vector<int> nums;
-    vector<int> maxTree;
-    vector<int> sumTree; 
-    int n;
-    
-    int left(int p) 
-    {
-        return p << 1;
-    }
+	int n;
+	vector<int> st;
 
-    int right(int p) 
+	void init(int _n) 
     {
-        return (p << 1) + 1;
-    }
+		this->n = _n;
+		st.resize(4 * n, 0);
+	}
 
-    void buildMaxTree(int p, int L, int R) 
+	void build(int start, int ending, int node, vector<int> &v) 
     {
-        if (L == R) 
+		// leaf node base case
+		if (start == ending) 
         {
-            maxTree[p] = L;
-        }
-        else 
+			st[node] = v[start];
+			return;
+		}
+
+		int mid = (start + ending) / 2;
+
+		// left subtree is (start,mid)
+		build(start, mid, 2 * node + 1, v);
+		// right subtree is (mid+1,ending)
+		build(mid + 1, ending, 2 * node + 2, v);
+
+		st[node] = st[node * 2 + 1] + st[node * 2 + 2];
+	}
+
+	int query(int start, int ending, int l, int r, int node) 
+    {
+		// non overlapping case
+		if (start > r || ending < l) 
         {
-            buildMaxTree(left(p), L, (L + R) / 2);
-            buildMaxTree(right(p), (L + R) / 2 + 1, R);
-            int c1 = maxTree[left(p)];
-            int c2 = maxTree[right(p)];
-            maxTree[p] = (nums[c1] <= nums[c2]) ? c1 : c2;
-        }
-    }
+			return 0;
+		}
 
-    void buildSumTree(int p, int L, int R) 
-    {
-        if (L == R) 
+		// complete overlap
+		if (start >= l && ending <= r) 
         {
-            sumTree[p] = L;
-        }
-        else 
+			return st[node];
+		}
+
+		// partial case
+		int mid = (start + ending) / 2;
+		int q1 = query(start, mid, l, r, 2 * node + 1);
+		int q2 = query(mid + 1, ending, l, r, 2 * node + 2);
+
+		return q1 + q2;
+	}
+
+	void update(int start, int ending, int node, int index, int value) 
+    {
+		// base case
+		if (start == ending) 
         {
-            buildSumTree(left(p), L, (L + R) / 2);
-            buildSumTree(right(p), (L + R) / 2 + 1, R);
-            sumTree[p] = sumTree[left(p)] + sumTree[right(p)];
-        }
-    }
-    
-    int rmq(int p, int L, int R, int i, int j) 
-    {
-        if (i > R || j < L) return -1;
-        if (L >= i && R <= j) return maxTree[p];
-        
-        int p1 = rmq(left(p), L, (L + R) / 2, i, j);
-        int p2 = rmq(right(p), (L + R) / 2 + 1, R, i, j);
-        if (p1 == -1) return p2;
-        if (p2 == -1) return p1;
-        return (nums[p1] <= nums[p2]) ? p1 : p2;
-    }
+			st[node] = value;
+			return;
+		}
 
-    int rsq(int p, int L, int R, int i, int j) 
-    {
-        if (i > R || j < L) return 0;
-        if (L >= i && R <= j) return sumTree[p];
+		int mid = (start + ending) / 2;
+		if (index <= mid) 
+        {
+			// left subtree
+			update(start, mid, 2 * node + 1, index, value);
+		}
+		else 
+        {
+			// right
+			update(mid + 1, ending, 2 * node + 2, index, value);
+		}
 
-        return rsq(left(p), L, (L + R)/2, i, j) + rsq(right(p), (L + R)/2 + 1, R, i, j);
-    }
+		st[node] = st[node * 2 + 1] + st[node * 2 + 2];
+		return;
+	}
 
-    void update(int p, int l, int r, int idx, int dif) 
+	void build(vector<int> &v) 
     {
-        if (idx < l || idx > r) return;
-        
-        sumTree[p] += dif;
-        if (nums[maxTree[p]] < nums[idx]) maxTree[p] = idx;
-        if (l == r) return;
-        update(left(p), l, (l + r)/2, idx, dif);
-        update(right(p), (l + r)/2 + 1, r, idx, dif);
-    }
+		build(0, n - 1, 0, v);
+	}
 
-public:
-    SegmentTree(vector<int>& A) 
+	int query(int l, int r) 
     {
-        nums = A;
-        n = (int)nums.size();
-        maxTree.assign(4 * n, 0);
-        buildMaxTree(1, 0, n - 1);
-        sumTree.assign(4 * n, 0);
-        buildSumTree(1, 0, n - 1);
-    }
-    
-    int rangeMaxQuery(int i, int j) 
-    {
-        return rmq(1, 0, n - 1, i, j);
-    }
+		return query(0, n - 1, l, r, 0);
+	}
 
-    int rangeSumQuery(int i, int j) 
+	void update(int x, int y) 
     {
-        return rsq(1, 0, n - 1, i, j);
-    }
-
-    void update(int idx, int val) 
-    {
-        int dif = val - nums[idx];
-        nums[idx] = val;
-        update(1, 0, n - 1, idx, dif);
-    }
+		update(0, n - 1, 0, x, y);
+	}
 };
+
+int main()
+{
+	freopen("input.txt", "r", stdin);
+	freopen("output.txt", "w", stdout);
+
+	vector<int> v = {1, 2, 3, 4, 5, 6, 7, 8};
+	// cout << v.size();
+
+	segmenttree tree;
+	tree.init(v.size());
+	tree.build(v);
+
+	cout << tree.query(0, 4) << '\n';
+	tree.update(4, 10);
+	cout << tree.query(2, 6) << '\n';
+	tree.update(2, 20);
+	cout << tree.query(0, 4) << '\n';
+
+	return 0;
+}
