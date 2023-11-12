@@ -1,60 +1,60 @@
-const int NUMBEROFNODES = ...;
-const int LG = ...;
-struct Trie{
-    struct Node{
-        int child[2];
-        int exist, cnt;
-    } nodes[NUMBEROFNODES];
-
-    int cur;
-    Trie() : cur(0) {
-        memset(nodes[0].child, -1, sizeof(nodes[cur].child));
-        nodes[0].exist = nodes[0].cnt = 0;
+class Solution 
+{
+public:
+    struct Node
+    {
+        Node* nextBit[2];
     };
 
-    int new_node() {
-        cur++;
-        memset(nodes[cur].child, -1, sizeof(nodes[cur].child));
-        nodes[cur].exist = nodes[cur].cnt = 0;
-        return cur;
-    }
+    struct Trie
+    {
+        Node* root;
 
-    void add_number(int x) {
-        int pos = 0;
-        for (int i = LG; i >= 0; i--) {
-            int c = (x >> i) & 1;
-            if (nodes[pos].child[c] == -1) nodes[pos].child[c] = new_node();
-            pos = nodes[pos].child[c];
-            nodes[pos].cnt++;
-        }
-        nodes[pos].exist++;
-    }
+        Trie(){ root = new Node(); }
 
-    void delete_number(int x) {
-        if (find_number(x) == false) return;
-        int pos = 0;
-        for (int i = LG; i >= 0; i--) {
-            int c = (x >> i) & 1;
-
-            int tmp = nodes[pos].child[c];
-            nodes[tmp].cnt--;
-            if (nodes[tmp].cnt == 0) {
-                nodes[pos].child[c] = -1;
-                return;
+        void insert(int num)
+        {
+            Node* tmp = root;
+            for(int i = 31; i >= 0; i--)
+            {
+                int bit = (num >> i) & 1;
+                if(tmp->nextBit[bit] == nullptr)
+                    tmp->nextBit[bit] = new Node();
+                tmp = tmp->nextBit[bit];
             }
-
-            pos = tmp;
         }
-        nodes[pos].exist--;
-    }
 
-    bool find_number(int x) {
-        int pos = 0;
-        for (int i = LG; i >= 0; i--) {
-            int c = (x & (1 << i) ? 1 : 0);
-            if (nodes[pos].child[c] == -1) return false;
-            pos = nodes[pos].child[c];
+        int find_max_xor(int val)
+        {
+            Node* tmp = root;
+            int res = 0;
+            for(int i = 31; i >= 0; i--)
+            {
+                int bit = (val >> i) & 1;
+                if(tmp->nextBit[1 - bit] != nullptr)
+                {
+                    res |= (1 << i);
+                    tmp = tmp->nextBit[1 - bit];
+                }
+                else
+                    tmp = tmp->nextBit[bit];
+            }
+            return res;
         }
-        return (nodes[pos].exist != 0);
+    };
+
+    int findMaximumXOR(vector<int>& nums) 
+    {
+        int res = 0;
+        Trie t;
+
+        t.insert(nums[0]);
+        for(int i = 1; i < nums.size(); i++)
+        {
+            res = max(res, t.find_max_xor(nums[i]));
+            t.insert(nums[i]);
+        }
+        
+        return res;
     }
 };
