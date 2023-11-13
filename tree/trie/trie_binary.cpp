@@ -1,16 +1,26 @@
-class Solution 
-{
+class Solution {
 public:
     struct Node
     {
         Node* nextBit[2];
+        int cnt;
+
+        Node()
+        {
+            this->nextBit[0] = nullptr;
+            this->nextBit[1] = nullptr;
+            this->cnt = 0;
+        }
     };
 
     struct Trie
     {
         Node* root;
 
-        Trie(){ root = new Node(); }
+        Trie()
+        { 
+            root = new Node();
+        }
 
         void insert(int num)
         {
@@ -20,6 +30,28 @@ public:
                 int bit = (num >> i) & 1;
                 if(tmp->nextBit[bit] == nullptr)
                     tmp->nextBit[bit] = new Node();
+                tmp->nextBit[bit]->cnt++;
+
+                tmp = tmp->nextBit[bit];
+            }
+        }
+
+        void remove(int num)
+        {
+            Node* tmp = root;
+            for(int i = 31; i >= 0; i--)
+            {
+                int bit = (num >> i) & 1;
+                if(tmp->nextBit[bit] == nullptr) return;
+
+                tmp->nextBit[bit]->cnt--;
+                if(tmp->nextBit[bit]->cnt == 0)
+                {
+                    delete tmp->nextBit[bit];
+                    tmp->nextBit[bit] = nullptr;
+                    return;
+                }
+                    
                 tmp = tmp->nextBit[bit];
             }
         }
@@ -36,25 +68,33 @@ public:
                     res |= (1 << i);
                     tmp = tmp->nextBit[1 - bit];
                 }
-                else
+                else if(tmp->nextBit[bit] != nullptr)
                     tmp = tmp->nextBit[bit];
+                else
+                return 0;
             }
             return res;
         }
     };
-
-    int findMaximumXOR(vector<int>& nums) 
+    
+    int maximumStrongPairXor(vector<int>& nums) 
     {
-        int res = 0;
+        sort(nums.begin(), nums.end());
+        int res = 0, k = 0;
         Trie t;
-
         t.insert(nums[0]);
+        
         for(int i = 1; i < nums.size(); i++)
         {
-            res = max(res, t.find_max_xor(nums[i]));
             t.insert(nums[i]);
+            while(nums[k] * 2 < nums[i])
+            {
+                t.remove(nums[k]);
+                k++;
+            }
+            res = max(res, t.find_max_xor(nums[i]));
         }
-        
+
         return res;
     }
 };
