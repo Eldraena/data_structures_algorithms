@@ -68,10 +68,8 @@ public:
                     res |= (1 << i);
                     tmp = tmp->nextBit[1 - bit];
                 }
-                else if(tmp->nextBit[bit] != nullptr)
-                    tmp = tmp->nextBit[bit];
                 else
-                return 0;
+                    tmp = tmp->nextBit[bit];
             }
             return res;
         }
