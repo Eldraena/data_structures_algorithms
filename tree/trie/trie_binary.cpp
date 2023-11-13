@@ -44,8 +44,6 @@ public:
             for(int i = 31; i >= 0; i--)
             {
                 int bit = (num >> i) & 1;
-                if(tmp->nextBit[bit] == nullptr) return;
-
                 tmp->nextBit[bit]->cnt--;
                 if(tmp->nextBit[bit]->cnt == 0)
                 {
